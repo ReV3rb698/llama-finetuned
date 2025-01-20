@@ -46,3 +46,38 @@ with torch.no_grad():
     output = model.generate(inputs['input_ids'], max_length=200)
 
 print(tokenizer.decode(output[0], skip_special_tokens=True))
+
+
+---
+
+## 📌 What Was Done
+
+This project fine-tunes the **Meta-Llama-3-8B** model using **LoRA (Low-Rank Adaptation)** on a dataset of job descriptions.
+
+### 🔹 **Steps Taken:**
+1. **Data Preparation:**
+   - A dataset of job postings was collected and structured into `job_skills.jsonl`.
+   - The dataset was formatted into JSONL to make it suitable for LLM fine-tuning.
+
+2. **Fine-Tuning in Google Colab:**
+   - `Llama_Colab_Training.ipynb` was used to fine-tune the Llama 3 model.
+   - Applied **LoRA** to optimize training efficiency and reduce VRAM usage.
+   - Used **PEFT (Parameter-Efficient Fine-Tuning)** for faster adaptation.
+
+3. **Model Training Details:**
+   - Training was done on **Google Colab A100 GPUs**.
+   - **Hyperparameters:** batch size 2, learning rate 5e-5, 3 epochs.
+   - The fine-tuned model was saved in **safetensors format**.
+
+4. **Model Usage:**
+   - `main.py` demonstrates how to load the fine-tuned model.
+   - The model takes job descriptions and generates **key job skills**.
+
+5. **Repository Updates:**
+   - Improved `.gitignore` to exclude large files & model checkpoints.
+   - Structured `README.md` to include training details and dataset usage.
+
+---
+
+
+
