@@ -79,5 +79,6 @@ This project fine-tunes the **Meta-Llama-3-8B** model using **LoRA (Low-Rank Ada
 
 ---
 
-
+# Source of the dataset:
+[Google Job Skills Dataset](https://www.kaggle.com/datasets/niyamatalmass/google-job-skills?resource=download)
 
