@@ -46,7 +46,7 @@ with torch.no_grad():
     output = model.generate(inputs['input_ids'], max_length=200)
 
 print(tokenizer.decode(output[0], skip_special_tokens=True))
-
+```
 
 ---
 
