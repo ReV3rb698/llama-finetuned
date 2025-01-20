@@ -1,0 +1,47 @@
+# Ignore virtual environments
+llama-env/
+venv/
+.env
+
+# Ignore model checkpoints (large files)
+checkpoint-*/
+
+# Ignore large model files
+*.safetensors
+*.bin
+*.pt
+*.h5
+
+# Ignore tokenizer and special token mappings
+tokenizer.json
+tokenizer_config.json
+special_tokens_map.json
+
+# Ignore Hugging Face cache (large files)
+~/.cache/huggingface/
+~/.huggingface/
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+*.iml
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore logs and temporary files
+logs/
+*.log
+*.tmp
+
+# Ignore dataset files (if using local data)
+data/
+datasets/
+*.csv
+*.jsonl
