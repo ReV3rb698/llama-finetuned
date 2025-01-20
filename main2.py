@@ -2,6 +2,7 @@ import torch
 from transformers import PreTrainedTokenizerFast, LlamaForCausalLM, LlamaConfig
 from safetensors import safe_open
 import os
+import csv
 
 # Use PreTrainedTokenizerFast instead of LlamaTokenizer to load the pre-trained tokenizer
 # The tokenizer is used to convert raw text into a format that can be processed by the model
@@ -75,47 +76,35 @@ model.eval()
 
 print("done eval")
 
-# Example job data from the CSV (or JSONL)
-job_data = {
-    "title": "Google Cloud Program Manager",
-    "company": "Google",
-    "location": "Singapore",
-    "responsibilities": "Shape, shepherd, ship, and show technical programs designed to support the work of cloud customer engineers...",
-    "min_qualifications": "BA/BS degree or equivalent practical experience. 3 years of experience in program and/or project management in cloud computing...",
-    "pref_qualifications": "Experience in the business technology market as a program manager in SaaS, cloud computing..."
-}
+# Path to input CSV and output TXT
+input_csv = "job_skills.csv"
+output_txt = "llm_results.txt"
 
-# Formulate the input text for the model
-input_text = f"Job Title: {job_data['title']}\nCompany: {job_data['company']}\nLocation: {job_data['location']}\n\n" \
-             f"Responsibilities: {job_data['responsibilities']}\n\n" \
-             f"Minimum Qualifications: {job_data['min_qualifications']}\n\n" \
-             f"Preferred Qualifications: {job_data['pref_qualifications']}\n\n" \
-             "Describe the key skills required for this job."
+# Open CSV and process each row
+with open(input_csv, newline='', encoding='utf-8') as csvfile, open(output_txt, 'w', encoding='utf-8') as outfile:
+    reader = csv.DictReader(csvfile)
 
-# Tokenize the input text
-inputs = tokenizer(input_text, return_tensors="pt")
+    for row in reader:
+        # Generate input text for the model
+        input_text = (
+            f"Job Title: {row['Title']}\n"
+            f"Company: {row['Company']}\n"
+            f"Category: {row['Category']}\n"
+            f"Location: {row['Location']}\n\n"
+            f"Responsibilities: {row['Responsibilities']}\n\n"
+            f"Minimum Qualifications: {row['Minimum Qualifications']}\n\n"
+            f"Preferred Qualifications: {row['Preferred Qualifications']}\n\n"
+            "Describe the key skills required for this job."
+        )
 
-print("debugging inputs")
-print("Input IDs:", inputs["input_ids"])
-print("Vocabulary size:", tokenizer.vocab_size)
+        # Tokenize input text
+        inputs = tokenizer(input_text, return_tensors="pt")
 
-# Verify all token IDs are within range
-max_id = max(inputs["input_ids"][0])
-print(f"Max token ID: {max_id}")
-if max_id >= model.config.vocab_size:
-    print("Error: Token ID exceeds vocabulary size!")
+        # Generate model output
+        with torch.no_grad():
+            #output = model.generate(inputs['input_ids'], max_length=300)
+            output = model.generate(inputs['input_ids'], max_new_tokens=100)
 
-
-print("done inputs")
-
-# Generate output from the model
-with torch.no_grad():  # Disable gradient calculation for inference
-    output = model.generate(inputs['input_ids'], max_length=100)
-
-# Decode the output
-decoded_output = tokenizer.decode(output[0], skip_special_tokens=True)
-
-print("done decoded output")
-
-# Print the generated text
-print("Generated Text:", decoded_output)
+        # Decode output and write to file
+        decoded_output = tokenizer.decode(output[0], skip_special_tokens=True)
+        outfile.write(f"Input:\n{input_text}\n\nOutput:\n{decoded_output}\n\n{'-' * 80}\n")
